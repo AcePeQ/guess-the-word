@@ -23,7 +23,6 @@ generateRandomWord();
 createInputFields(currentWord.length);
 
 const inputs = [...document.querySelectorAll(".input")];
-console.log(inputs);
 
 function scrambleWord(word) {
   const letters = word.split("");
