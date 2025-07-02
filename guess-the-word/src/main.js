@@ -15,6 +15,15 @@ let numberOfTries = 0;
 let mistakes = [];
 
 const inputsContainer = document.querySelector("#inputs");
+const triesTextContainer = document.querySelector("#tries");
+const mistakesText = document.querySelector("#mistakesText");
+const resetButtons = [...document.querySelectorAll(".reset")];
+
+generateRandomWord();
+createInputFields(currentWord.length);
+
+const inputs = [...document.querySelectorAll(".input")];
+console.log(inputs);
 
 function scrambleWord(word) {
   const letters = word.split("");
@@ -39,6 +48,8 @@ function generateRandomWord() {
 }
 
 function createInputFields(length) {
+  inputsContainer.innerHTML = "";
+
   for (let i = 0; i < length; i++) {
     const input = document.createElement("input");
     input.setAttribute("id", `input-${i}`);
@@ -53,6 +64,8 @@ function createInputFields(length) {
 }
 
 function handleInput(event) {
+  if (numberOfTries === 5) resetGame();
+
   const input = event.target;
   if (!input.value) return;
 
@@ -66,12 +79,43 @@ function handleInput(event) {
       input.nextElementSibling.focus();
     } else {
       input.blur();
+      if (+inputIndex === inputs.length - 1) {
+        let word = inputs.map((input) => input.value).join("");
+
+        if (currentWord === word) {
+          window.alert(`You won! The word was ${currentWord}`);
+          resetGame();
+          return;
+        }
+      }
     }
   } else {
+    const dotTry = document.querySelector(`[data-dot='${numberOfTries}']`);
+    dotTry.classList.add("activeDot");
+    ++numberOfTries;
+
+    triesTextContainer.textContent = `Tries (${numberOfTries}/5):`;
+    if (!mistakes.includes(input.value)) {
+      mistakes.push(input.value);
+      mistakesText.textContent = `Mistakes: ${mistakes.join(", ")}`;
+    }
     input.value = "";
-    mistakes.push(input.value);
   }
 }
 
-generateRandomWord();
-createInputFields(currentWord.length);
+function resetGame() {
+  const tryDots = [...document.querySelectorAll("#dot")];
+  tryDots.forEach((dot) => dot.classList.remove("activeDot"));
+
+  currentWord = "";
+  numberOfTries = 0;
+  mistakes = [];
+
+  generateRandomWord();
+  createInputFields(currentWord.length);
+
+  triesTextContainer.textContent = `Tries (${numberOfTries}/5):`;
+  mistakesText.textContent = `Mistakes: ${mistakes.join(", ")}`;
+}
+
+resetButtons.forEach((button) => button.addEventListener("click", resetGame));
