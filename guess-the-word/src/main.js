@@ -63,6 +63,22 @@ function createInputFields(length) {
   }
 }
 
+function checkIfPlayerWon() {
+  const currentInputWord = inputs
+    .map((input) => input.value.toLowerCase())
+    .join("");
+
+  if (
+    currentInputWord.length === currentWord.length &&
+    currentInputWord === currentWord
+  ) {
+    setTimeout(() => {
+      window.alert(`🎉 You won! The word was "${currentWord.toUpperCase()}"`);
+      resetGame();
+    }, 100);
+  }
+}
+
 function handleInput(event) {
   if (numberOfTries === 5) resetGame();
 
@@ -71,23 +87,11 @@ function handleInput(event) {
 
   const inputIndex = input.dataset.index;
 
-  if (
-    currentWord.includes(input.value) &&
-    currentWord[inputIndex] === input.value
-  ) {
+  if (currentWord[inputIndex] === input.value) {
     if (input.nextElementSibling) {
       input.nextElementSibling.focus();
     } else {
       input.blur();
-      if (+inputIndex === inputs.length - 1) {
-        let word = inputs.map((input) => input.value).join("");
-
-        if (currentWord === word) {
-          window.alert(`You won! The word was ${currentWord}`);
-          resetGame();
-          return;
-        }
-      }
     }
   } else {
     const dotTry = document.querySelector(`[data-dot='${numberOfTries}']`);
@@ -101,6 +105,8 @@ function handleInput(event) {
     }
     input.value = "";
   }
+
+  checkIfPlayerWon();
 }
 
 function resetGame() {
